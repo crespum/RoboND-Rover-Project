@@ -81,14 +81,20 @@ def perspect_transform(img, src, dst):
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(rover):
+    img = rover.img
+
     # Perspective transform not accurate if pitch or roll angles are far from 0
+    # In these case continue straight
     if (rover.pitch > 1) and (rover.pitch < 359):
+        rover.nav_dists = 0*rover.nav_dists
+        rover.nav_angles = 0*rover.nav_angles
         return rover
 
     if (rover.roll > 1) and (rover.roll < 359):
+        rover.nav_dists = 0*rover.nav_dists
+        rover.nav_angles = 0*rover.nav_angles
         return rover
 
-    img = rover.img
     # 1) Define source and destination points for perspective transform
     dst_size = 5
     bottom_offset = 6
