@@ -43,15 +43,15 @@ def decision_step(rover):
                     elif rover.vel >= rover.max_vel:
                         rover.throttle = 0
                         rover.brake = 0
+                        rover.steer = wall_dir_clipped_deg
                     else:
                         # Set throttle value to throttle setting
                         rover.throttle = rover.throttle_set
                         rover.brake = 0
-                        if rover.vel > 0.2*rover.max_vel:
+                        rover.steer = wall_dir_clipped_deg
+                        if rover.vel > 0.2:
                             # To distinguish between being stuck and starting to move
                             rover.started = True
-
-                    rover.steer = wall_dir_clipped_deg
                 else:
                     # Set mode to "stop" and hit the brakes!
                     rover.throttle = 0
@@ -131,7 +131,6 @@ def decision_step(rover):
                 rover.mode = 'forward'
 
         elif rover.mode == 'sample':
-            print("PICKING SAMPLE!")
             # If we're in stop mode but still moving keep braking
             if rover.vel > 0.2:
                 rover.throttle = 0

@@ -54,7 +54,7 @@ class RoverState():
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
         self.throttle_set = 0.4 # Throttle setting when accelerating
-        self.brake_slow_set = 0.15 # Slow down
+        self.brake_slow_set = 0.1 # Slow down
         self.brake_fast_set = 10 # Brake setting when braking
         self.started = False
         # The stop_forward and go_forward fields below represent total count
