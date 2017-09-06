@@ -16,6 +16,9 @@
 
 [rock1_processed]: ./misc/example_rock1_processed.png
 [grid1_processed]: ./misc/example_grid1_processed.png
+[rover_dir1]: ./misc/rover_direction1.png
+[rover_dir2]: ./misc/rover_direction2.png
+[rover_dir3]: ./misc/rover_direction3.png
 
 ## [Rubric Points](https://review.udacity.com/#!/rubrics/916/view)
 Below I will consider the rubric points individually and describe how I addressed each point in my implementation.  
@@ -45,6 +48,16 @@ In order to identify navigable terrain, obstacles or rocks from one of the rover
 
 As an example on how to use the Jupyter Notebook to test and improve the image processing, [this video](./misc/test_pitch_yaw_selection.mp4) has been included in the repository. The goal of that video was to check which ranges of the pitch and yaw angles to use for discarding shots where the grid was not calibrated. These values have been extracted from the CSV and inserted into the dataset.
 
+The Notebook has also been used to tune the rover's direction. In order to navigate near the wall, we point it to the minimum angle obtained after the transformation to polar coordinates (to navigate near the right hand wall). We add an offset because the edges are a bit irregular, which makes the image is not stable.
+
+We also calculate how many navigable pixels are if we point the rover towards the aforementioned direction.
+
+![Direction 1][rover_dir1]
+
+![Direction 2][rover_dir2]
+
+![Direction 3][rover_dir3]
+
 ### Autonomous Navigation and Mapping
 
 1. Fill in the `perception_step()` (at the bottom of the `perception.py` script) and `decision_step()` (in `decision.py`) functions in the autonomous mapping scripts and an explanation is provided in the writeup of how and why these functions were modified as they were.
@@ -55,10 +68,15 @@ As an example on how to use the Jupyter Notebook to test and improve the image p
 
 | Resolution |  Quality  |
 |------------|-----------|
-|     NA     |     NA    |
+|  1280x720  |  Fastest  |
 
 I have modified the given decisions tree to obtain more accurate results. The following modifications were enough to map at least 80% of the map with a 70% accuracy:
 * Don't throttle if the required steering angle is too big and the speed is already big enough. The reason I do this is because the higher the steering angle and the speed are, the further from 0 pitch and roll will be. In this case, a lot of the captured images would have to be discarded for not accurate enough for mapping with our grid calibration. Reducing the speed (or at least not increasing it), will result in more valid shots.
 * Continue in stop mode until the camera sees navigable terrain and the required steering angle to reach it is not bigger than what the rover can steer (+/-15º).
 
-I have defined three different modes for the rover: forward, stop and sample.
+I have added to extra modes (unstuck and sample) to the two existing ones (forward and stop).
+* Unstuck: when the rover is in this mode, it will move backwards during some meters and then go back to forward mode. To allow the rover to start moving, this mode can only be entered when a flag called `started` has been set. This is set whenever the robot exceeds certain speed.
+* Sample:
+
+The results can be improved by tuning the image thresholds
+I am under the impression that the areas supposed to be shadows are no being properly detected as navigable terrain.
