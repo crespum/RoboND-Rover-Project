@@ -17,7 +17,13 @@ def decision_step(rover):
         # Check for rover.mode status
         if rover.mode == 'forward':
 
-            if len(rover.nav_angles) > 0:
+            if rover.near_sample:
+                rover.throttle = 0
+                rover.brake = rover.brake_fast_set
+                rover.steer = 0
+                rover.mode = 'sample'
+
+            elif len(rover.nav_angles) > 0:
                 # Find the wall to navigate in parallel
                 wall_dir_rad = np.min(rover.nav_angles) + np.deg2rad(40)
                 wall_dir_deg = np.rad2deg(wall_dir_rad)
@@ -71,11 +77,16 @@ def decision_step(rover):
                 rover.steer = 0
                 rover.mode = 'stop'
 
-        # If we're already in "stop" mode then make different decisions
         elif rover.mode == 'stop':
 
+            if rover.near_sample:
+                rover.throttle = 0
+                rover.brake = rover.brake_fast_set
+                rover.steer = 0
+                rover.mode = 'sample'
+
             # If we're in stop mode but still moving keep braking
-            if rover.vel > 0.2:
+            elif rover.vel > 0.2:
                 rover.throttle = 0
                 rover.brake = rover.brake_fast_set
                 rover.steer = 0
@@ -116,6 +127,21 @@ def decision_step(rover):
             if rover.vel < -0.4:
                 rover.throttle = 0
                 rover.brake = rover.brake_fast_set
+                rover.steer = 0
+                rover.mode = 'forward'
+
+        elif rover.mode == 'sample':
+            print("PICKING SAMPLE!")
+            # If we're in stop mode but still moving keep braking
+            if rover.vel > 0.2:
+                rover.throttle = 0
+                rover.brake = rover.brake_fast_set
+                rover.steer = 0
+            elif rover.near_sample and not rover.picking_up:
+                rover.send_pickup = True
+            else:
+                rover.throttle = 0
+                rover.brake = 0
                 rover.steer = 0
                 rover.mode = 'forward'
 

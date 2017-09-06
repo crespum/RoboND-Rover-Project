@@ -70,13 +70,14 @@ We also calculate how many navigable pixels are if we point the rover towards th
 |------------|-----------|
 |  1280x720  |  Fastest  |
 
-I have modified the given decisions tree to obtain more accurate results. The following modifications were enough to map at least 80% of the map with a 70% accuracy:
+I have modified the given decisions tree to obtain more accurate results. The following modifications were enough to map at least 80% of the map with a 60% accuracy:
 * Don't throttle if the required steering angle is too big and the speed is already big enough. The reason I do this is because the higher the steering angle and the speed are, the further from 0 pitch and roll will be. In this case, a lot of the captured images would have to be discarded for not accurate enough for mapping with our grid calibration. Reducing the speed (or at least not increasing it), will result in more valid shots.
 * Continue in stop mode until the camera sees navigable terrain and the required steering angle to reach it is not bigger than what the rover can steer (+/-15º).
 
 I have added to extra modes (unstuck and sample) to the two existing ones (forward and stop).
 * Unstuck: when the rover is in this mode, it will move backwards during some meters and then go back to forward mode. To allow the rover to start moving, this mode can only be entered when a flag called `started` has been set. This is set whenever the robot exceeds certain speed.
-* Sample:
+* Sample: whenever the flag `near_sample` is set, the rover goes into this mode and sends a pick up order. The mode is left after when `picking_up` is `False`.
 
-The results can be improved by tuning the image thresholds
-I am under the impression that the areas supposed to be shadows are no being properly detected as navigable terrain.
+Some ideas to improve the results are:
+* I am under the impression that the areas supposed to be shadows are not being properly detected as navigable terrain. This could be fixed spending some extra time on fine tuning the image thresholds. This would allow the rover by to navigate even closer to the wall and thus pick more samples and increase the map's fidelity.
+* Smarter unstuck algorithm. Some of the rocks found in the middle of the navigable terrain block the rock from moving in any direction. 
